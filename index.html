@@ -27,6 +27,29 @@
         .bottom-nav-item.active p {
             font-weight: 600;
         }
+        
+        /* [FIX 2] Custom styles for slider thumb to make it more draggable */
+        #simulationSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2563eb;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+
+        #simulationSlider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #2563eb;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -279,26 +302,35 @@
 
             container.innerHTML = `
                 <div class="p-6">
+                    <!-- [FIX 3] Header with Logo -->
                     <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h1 class="text-2xl font-bold">Halo, Investor!</h1>
-                            <p class="text-gray-600">Profil: <span class="font-semibold text-blue-600">${appState.userProfile}</span></p>
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="target" class="w-7 h-7 text-blue-600"></i>
+                            <span class="font-bold text-xl">MyGoal</span>
                         </div>
                         <div class="relative">
                             <i data-lucide="bell" class="text-gray-500 cursor-pointer" onclick="changeTab('roadmapScreen')"></i>
                             <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white ${appState.roadmap.monthlyDepositDue ? '' : 'hidden'}"></div>
                         </div>
                     </div>
+                    
+                    <div class="mb-6">
+                        <h1 class="text-2xl font-bold">Halo, Investor!</h1>
+                        <p class="text-gray-600">Profil: <span class="font-semibold text-blue-600">${appState.userProfile}</span></p>
+                    </div>
+
+                    <!-- [FIX 1] Stat Boxes with responsive text -->
                     <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 overflow-hidden">
                             <h3 class="font-semibold text-blue-800 text-sm">Total Aset</h3>
-                            <p class="text-2xl font-bold text-blue-900 mt-1">${formatCurrency(totalAssets)}</p>
+                            <p class="text-xl lg:text-2xl font-bold text-blue-900 mt-1 break-words">${formatCurrency(totalAssets)}</p>
                         </div>
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 overflow-hidden">
                             <h3 class="font-semibold text-green-800 text-sm">Kemampuan Investasi</h3>
-                            <p class="text-2xl font-bold text-green-900 mt-1">${formatCurrency(appState.financialProfile.capacity)}/bln</p>
+                            <p class="text-xl lg:text-2xl font-bold text-green-900 mt-1 break-words">${formatCurrency(appState.financialProfile.capacity)}/bln</p>
                         </div>
                     </div>
+
                     ${appState.achievements.length > 0 ? `
                     <div class="mb-6">
                         <h3 class="text-xl font-bold mb-4">Pencapaianmu</h3>
@@ -455,6 +487,7 @@
         
         function setupSimulationSlider() {
             const slider = document.getElementById('simulationSlider');
+            if (!slider) return;
             const plan = appState.activePlan;
             slider.value = plan.monthly;
             slider.min = Math.max(100000, plan.monthly / 2);
